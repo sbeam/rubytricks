@@ -1,0 +1,16 @@
+Learning Ruby
+
+Do I know what I know, or do I not know what I don't know?
+
+This is an implementation of great idea to get in the habit of running tests,
+while learning Ruby. Each time I learn a new ruby-ism, I try to make a 'test'
+to demonstrate it. Not really testing Ruby, but testing my own knowledge and
+understanding, while re-enforcing the lesson.
+
+And on the off chance that Ruby 2.0 breaks something I have learned to be true,
+will be a great way to find out before getting bitten by it in the field.
+
+Credit to Mike Clark of Pragmatic Studio for the good idea
+http://clarkware.com/cgi/blosxom/2005/03/18
+
+
