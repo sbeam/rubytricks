@@ -1,11 +1,11 @@
 require 'test/unit'
 
 module PrimeFinder
-    HARDLIMIT = 1000000
 
-    class Brute
+    module Brute
+        HARDLIMIT = 1000000
 
-        def self.find pos 
+        def find_prime_at pos 
 
             cnt = 0
             raise "arg must be a positive integer" unless pos > 0
@@ -26,27 +26,27 @@ end
 
 
 class PrimesTest < Test::Unit::TestCase
-    include PrimeFinder
+    include PrimeFinder::Brute
 
     def test_string
-        p = Brute::find 'squix';
+        p = find_prime_at 'squix';
         flunk "Should have had an exception here"
     rescue Exception => e
         assert_equal e.message, 'comparison of String with 0 failed'
     end
 
     def test_neg
-        p = Brute::find -92
+        p = find_prime_at -92
         flunk "Should have had an exception here"
     rescue Exception => e
         assert_equal e.message, "arg must be a positive integer"
     end
 
     def test_find
-        p = Brute::find 11
+        p = find_prime_at 11
         assert_equal(37, p)
 
-        p = Brute::find 20
+        p = find_prime_at 20
         assert_equal(73, p)
     end
 end
