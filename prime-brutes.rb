@@ -11,15 +11,22 @@ module PrimeFinder
             raise "arg must be a positive integer" unless pos > 0
 
             for i in (3..HARDLIMIT)
-                f = i/2.to_i
-                f.downto(1) { |f|
-                    break if i.to_f/f.to_f == (i/f)
-                }
-                if (f==1) 
+                if is_prime i
                     cnt += 1
                     return i if cnt == pos
                 end
             end
+        end
+
+        def is_prime i
+
+            raise "arg must be a positive integer greater than 1" unless i > 1
+
+            f = i/2.to_i
+            f.downto(2) { |f|
+                return if i.to_f/f.to_f == (i/f)
+            }
+            true
         end
     end
 end
@@ -40,6 +47,13 @@ class PrimesTest < Test::Unit::TestCase
         flunk "Should have had an exception here"
     rescue Exception => e
         assert_equal e.message, "arg must be a positive integer"
+    end
+
+    def test_is_prime
+        assert_nil is_prime(8)
+        assert_nil is_prime(81)
+        assert_equal true, is_prime(29)
+        assert_equal true, is_prime(48611)
     end
 
     def test_find
