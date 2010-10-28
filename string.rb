@@ -45,3 +45,9 @@ class StringTest < Test::Unit::TestCase
       bux = stuff[:z] || default
       assert_equal(999, bux)
   end
+
+  def test_gsub_match_pass_to_block
+    str = "this {{is}} very {{awesome}}".gsub(/\{+([^{}]*)\}+/) { |s| $1.upcase }
+    assert_equal("this IS very AWESOME", str)
+  end
+end
