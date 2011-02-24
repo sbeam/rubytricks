@@ -38,4 +38,22 @@ class HashTest < Test::Unit::TestCase
         h = [1,2,3,4].inject({}) { |s,e| s.merge( { e => e**2 } ) }
         assert_equal h, {1=>1, 2=>4, 3=>9, 4=>16}
     end
+
+    def simple_word_to_time arg
+        time = case arg.to_s
+               when 'today'
+                   Time.now
+               when 'tomorrow'
+                   Time.now - 86400
+               end
+        time.strftime "%Y-%m-%d"
+    end
+        
+    def test_a_value_based_switcher # this was going to be interesting, but it got late
+        h = {:name => 'Foo', :age => 56, :start => :today, :end => :tomorrow}
+        [:start, :end].each do |k|
+            h[k] = simple_word_to_time h[k]
+        end
+        assert_equal h, {:name => 'Foo', :age => 56, :start => Time.now.strftime("%Y-%m-%d"), :end => (Time.now - 86400).strftime("%Y-%m-%d")}
+    end
 end
