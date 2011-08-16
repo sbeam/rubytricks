@@ -148,6 +148,28 @@ class IdentityTest < Test::Unit::TestCase
         assert_match /^undefined method `rate/, e.message
     end
 
+    def test_emp_is_old_enough
+        s = Employee.new "Cindy"
+        s.age = 17
+        flunk "Should have had an exception"
+    rescue Exception => e
+        assert_equal 'that age is too low!', e.message
+    end
+
+    def test_freelancer_is_old_enough
+        s = Freelancer.new "Cindy"
+        s.age = 20
+        flunk "Should have had an exception"
+    rescue Exception => e
+        assert_equal 'that age is too low!', e.message
+    end
+
+    def test_emp_has_an_age
+        s = Freelancer.new "Cindy"
+        s.age = 22
+        assert_equal 22, s.age
+    end
+
 end
 
 
