@@ -7,30 +7,22 @@ module Worker
     end
 
     module ClassMethods
-        def attr_minimum(args)
-            args.each do |k, v|
-                attr_accessor k.to_sym
+        def attr_minimum(arg)
+            metaclass.send(:class_variable_set, "@@minimums", arg)
 
-                metaclass.instance_eval("@@min_#{k} = v")
+            arg.each do |k, v|
+                attr_accessor k
 
-                define_method "#{k}=".to_sym do |value|
-                     min = self.class.metaclass.send(:class_variable_get, "@@min_#{k}")
+                define_method "#{k}=" do |value|
+                    min = self.class.metaclass.send(:class_variable_get, "@@minimums")
+                    raise "that #{k} is too low!" if (min[k] and value < min[k])
 
-                     raise "that #{k} is too low!" if (value < min)
-
-                     instance_eval "@#{k} = value"
-                end
-            end
-
-            metaclass.class_variables.each do |var|
-                puts args.inspect
-                if m = var.to_s.match(/^@@min_(.+)/)
-                    meth = "#{m[1]}="
-                    if metaclass.method_defined? meth
-                        metaclass.send(:undef_method, meth) unless args.keys.include? m[1].to_sym
+                    if min[k]
+                        instance_eval "@#{k} = value"
+                    else
+                        raise "Attribute '#{k}' is inapplicable to #{self.class}"
                     end
                 end
-
             end
         end
 
@@ -62,7 +54,6 @@ class Employee
 end
 
 class Freelancer < Employee
-    include Worker
 
     attr_minimum :rate => 125, :age => 21
 
@@ -116,7 +107,7 @@ class IdentityTest < Test::Unit::TestCase
         s.salary = 99_200
         flunk "Should have had an exception"
     rescue Exception => e
-        assert_match /^undefined method `salary=/, e.message
+        assert_equal "Attribute 'salary' is inapplicable to Freelancer", e.message
     end
 
 end
