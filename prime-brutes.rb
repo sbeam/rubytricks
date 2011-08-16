@@ -1,11 +1,15 @@
 require 'test/unit'
 
+# this is a brute force prime finder, but the main point of this file
+# is an excercise in using Test::Unit to test exceptions and other
+# error conditions.
+
 module PrimeFinder
 
     module Brute
         HARDLIMIT = 1000000
 
-        def find_prime_at pos 
+        def find_prime_at pos
 
             cnt = 0
             raise "arg must be a positive integer" unless pos > 0
