@@ -1,13 +1,29 @@
 require 'test/unit'
 
-module Worker
+
+# a test to play around with a little meta-programming in Ruby, and create an include-able Module, that
+# implements a basic validation against instance variables
+#
+# note that even though Employee.class_eval is used to set the validate_minimum, it does the right thing and
+# does not cause Freelancer to have a 'salary=' method, even though Freelancer < Employee. That is the trick and
+# why the metaclass was needed.
+#
+# credits:
+# http://www.ruby-doc.org/core/classes/Module.html
+# http://mislav.uniqpath.com/poignant-guide/dwemthy/ < --- awesome.
+# http://dannytatom.github.com/metaid/
+# http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/
+# http://www.raulparolari.com/Ruby2/define_method
+#
+
+module MyValidator
 
     def self.included(base)
         base.extend(ClassMethods)
     end
 
     module ClassMethods
-        def attr_minimum(arg)
+        def validate_minimum(arg)
             metaclass.send(:class_variable_set, "@@minimums", arg)
 
             arg.each do |k, v|
@@ -20,7 +36,7 @@ module Worker
                     if min[k]
                         instance_eval "@#{k} = value"
                     else
-                        raise "Attribute '#{k}' is inapplicable to #{self.class}"
+                        raise ArgumentError, "undefined method `#{k}' for #{self.to_s}" # imitate the default :/
                     end
                 end
             end
@@ -31,7 +47,7 @@ module Worker
 end
 
 class Employee
-    include Worker
+    include MyValidator
 
     attr_accessor :name
 
@@ -55,7 +71,7 @@ end
 
 class Freelancer < Employee
 
-    attr_minimum :rate => 125, :age => 21
+    validate_minimum :rate => 125, :age => 21
 
     self.rank = 'Freelance'
 
@@ -64,7 +80,7 @@ class Freelancer < Employee
 end
 
 Employee.class_eval do
-    attr_minimum :salary => 40_000, :age => 18
+    validate_minimum :salary => 40_000, :age => 18
 end
 
 
@@ -107,7 +123,29 @@ class IdentityTest < Test::Unit::TestCase
         s.salary = 99_200
         flunk "Should have had an exception"
     rescue Exception => e
-        assert_equal "Attribute 'salary' is inapplicable to Freelancer", e.message
+        assert_match /^undefined method `salary/, e.message
+    end
+
+    def test_emp_can_have_salary
+        s = Employee.new "Cindy"
+        s.salary = 102_000
+        assert_equal 102_000, s.salary
+    end
+
+    def test_emp_cant_have_a_low_salary
+        s = Employee.new "Cindy"
+        s.salary = 2_000
+        flunk "Should have had an exception because that salary is too low"
+    rescue Exception => e
+        assert_equal 'that salary is too low!', e.message
+    end
+
+    def test_emp_cant_have_a_rate
+        s = Employee.new "Cindy"
+        s.rate = 200
+        flunk "Should have had an exception"
+    rescue Exception => e
+        assert_match /^undefined method `rate/, e.message
     end
 
 end
