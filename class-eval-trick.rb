@@ -45,7 +45,7 @@ class FrozTestTakeTwo < Test::Unit::TestCase
         end
 
         # a became a cowboy!
-        assert_equal "howdy", f.greet
+        assert_equal "howdy", a.greet
 
         # what's this? b's got spurs on too!
         assert_equal "howdy, sir", b.greet
