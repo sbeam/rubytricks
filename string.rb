@@ -15,6 +15,7 @@ class StringTest < Test::Unit::TestCase
       assert_equal("asdf", "AsDF".downcase)
   end
 
+
   def test_squeeze
       assert_equal("too many spaces in this stuff", "too   many      spaces in   this    stuff".squeeze(' '));
       assert_equal("m thatsa spicy meatballa","mmmmm thatsssa spicy mmmeatballa".squeeze('m-t'));
@@ -30,9 +31,15 @@ class StringTest < Test::Unit::TestCase
       assert_equal('http://somewhere.com/', url.match(/(^.*\/{2}[^\/]*\/)/)[1])
   end
 
+  def test_global_replace
+      s = "My SSN is 291-92-8423"
+      assert_equal "My SSN is XXX-XX-XXXX", s.gsub(/\d/, 'X')
+  end
+
+  # this is a dumb test, but has different results on 1.8.6, 1.8.7, and 1.9.2
   def test_mapping_thing_flattener
       fields = { :foo => ['thing1', 'thing2', [8,9,10], Time.now] }
-      assert_equal(["thing1", "thing2", "8910", Time.now.to_s], fields[:foo].map(&:to_s))
+      assert_equal(["thing1", "thing2", "[8, 9, 10]", Time.now.to_s], fields[:foo].map(&:to_s))
   end
   
   def test_or_defaulting
